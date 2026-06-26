@@ -14,7 +14,364 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      accounts: {
+        Row: {
+          color: string
+          created_at: string
+          credit_limit: number | null
+          icon: string
+          id: string
+          initial_balance: number
+          is_archived: boolean
+          name: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          credit_limit?: number | null
+          icon?: string
+          id?: string
+          initial_balance?: number
+          is_archived?: boolean
+          name: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          credit_limit?: number | null
+          icon?: string
+          id?: string
+          initial_balance?: number
+          is_archived?: boolean
+          name?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      budgets: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          id: string
+          limit_amount: number
+          reference_month: string
+          scope: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          limit_amount: number
+          reference_month: string
+          scope: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          limit_amount?: number
+          reference_month?: string
+          scope?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budgets_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      categories: {
+        Row: {
+          color: string
+          created_at: string
+          icon: string
+          id: string
+          is_archived: boolean
+          is_system: boolean
+          name: string
+          type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          icon?: string
+          id?: string
+          is_archived?: boolean
+          is_system?: boolean
+          name: string
+          type: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          icon?: string
+          id?: string
+          is_archived?: boolean
+          is_system?: boolean
+          name?: string
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      goal_contributions: {
+        Row: {
+          amount: number
+          created_at: string
+          date: string
+          goal_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          date?: string
+          goal_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          date?: string
+          goal_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goal_contributions_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goals: {
+        Row: {
+          category_id: string | null
+          color: string
+          created_at: string
+          deadline: string
+          icon: string
+          id: string
+          linked_account_id: string | null
+          name: string
+          priority: string
+          saved_amount: number
+          status: string
+          target_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category_id?: string | null
+          color?: string
+          created_at?: string
+          deadline: string
+          icon?: string
+          id?: string
+          linked_account_id?: string | null
+          name: string
+          priority?: string
+          saved_amount?: number
+          status?: string
+          target_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category_id?: string | null
+          color?: string
+          created_at?: string
+          deadline?: string
+          icon?: string
+          id?: string
+          linked_account_id?: string | null
+          name?: string
+          priority?: string
+          saved_amount?: number
+          status?: string
+          target_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goals_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goals_linked_account_id_fkey"
+            columns: ["linked_account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          currency: string
+          estimated_monthly_expenses: number | null
+          financial_goals: string[] | null
+          full_name: string
+          id: string
+          income_day: number | null
+          main_income: number | null
+          notifications_enabled: boolean
+          onboarding_completed: boolean
+          onboarding_step: number
+          updated_at: string
+          use_budget: boolean
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          currency?: string
+          estimated_monthly_expenses?: number | null
+          financial_goals?: string[] | null
+          full_name?: string
+          id: string
+          income_day?: number | null
+          main_income?: number | null
+          notifications_enabled?: boolean
+          onboarding_completed?: boolean
+          onboarding_step?: number
+          updated_at?: string
+          use_budget?: boolean
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          currency?: string
+          estimated_monthly_expenses?: number | null
+          financial_goals?: string[] | null
+          full_name?: string
+          id?: string
+          income_day?: number | null
+          main_income?: number | null
+          notifications_enabled?: boolean
+          onboarding_completed?: boolean
+          onboarding_step?: number
+          updated_at?: string
+          use_budget?: boolean
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          account_id: string
+          amount: number
+          category_id: string
+          created_at: string
+          date: string
+          deleted_at: string | null
+          description: string | null
+          id: string
+          income_type: string | null
+          installment_group_id: string | null
+          installment_number: number | null
+          installment_total: number | null
+          is_recurring: boolean
+          kind: string
+          notes: string | null
+          payment_method: string | null
+          status: string
+          tags: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_id: string
+          amount: number
+          category_id: string
+          created_at?: string
+          date: string
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          income_type?: string | null
+          installment_group_id?: string | null
+          installment_number?: number | null
+          installment_total?: number | null
+          is_recurring?: boolean
+          kind: string
+          notes?: string | null
+          payment_method?: string | null
+          status?: string
+          tags?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_id?: string
+          amount?: number
+          category_id?: string
+          created_at?: string
+          date?: string
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          income_type?: string | null
+          installment_group_id?: string | null
+          installment_number?: number | null
+          installment_total?: number | null
+          is_recurring?: boolean
+          kind?: string
+          notes?: string | null
+          payment_method?: string | null
+          status?: string
+          tags?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
