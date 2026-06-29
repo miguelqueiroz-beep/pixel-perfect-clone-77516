@@ -94,6 +94,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "FinFlow — Gestão financeira pessoal" },
+      { name: "description", content: "Atualizações" },
+      { property: "og:description", content: "Atualizações" },
+      { name: "twitter:description", content: "Atualizações" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5284e2ce-5498-4b7e-b11c-e9e6e93cab29/id-preview-285d7b52--58f9b1f2-7376-46fb-8035-6168eaffaccb.lovable.app-1782775022942.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5284e2ce-5498-4b7e-b11c-e9e6e93cab29/id-preview-285d7b52--58f9b1f2-7376-46fb-8035-6168eaffaccb.lovable.app-1782775022942.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
