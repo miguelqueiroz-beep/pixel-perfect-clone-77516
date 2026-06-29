@@ -67,14 +67,15 @@ function AccountsPage() {
 
   const del = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("accounts").delete().eq("id", id);
+      // Usar soft-delete em vez de hard-delete
+      const { error } = await supabase.from("accounts").update({ is_archived: true }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Conta removida");
+      toast.success("Conta arquivada com sucesso");
       qc.invalidateQueries({ queryKey: ["accounts"] });
     },
-    onError: () => toast.error("Não foi possível excluir. Verifique se há transações vinculadas."),
+    onError: (e: Error) => toast.error(e.message || "Erro ao arquivar conta"),
   });
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {

@@ -68,6 +68,7 @@ export function useAccounts() {
       const { data, error } = await supabase
         .from("accounts")
         .select("*")
+        .eq("is_archived", false)
         .order("created_at", { ascending: true });
       if (error) throw error;
       return (data || []) as Account[];
