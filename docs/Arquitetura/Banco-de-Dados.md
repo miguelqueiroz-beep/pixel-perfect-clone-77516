@@ -14,12 +14,14 @@ erDiagram
     USERS ||--o{ TRANSACTIONS : records
     USERS ||--o{ BUDGETS : sets
     USERS ||--o{ GOALS : creates
+    USERS ||--o{ CUSTOMERS : owns
     
     ACCOUNTS ||--o{ TRANSACTIONS : contains
     CATEGORIES ||--o{ TRANSACTIONS : categorizes
     CATEGORIES ||--o{ BUDGETS : limits
     GOALS ||--o{ CATEGORIES : may_target
     GOALS ||--o{ ACCOUNTS : may_link
+    CUSTOMERS ||--o{ CUSTOMER_ADDRESSES : has
 
     USERS {
         uuid id PK
@@ -41,6 +43,41 @@ erDiagram
         boolean notifications_enabled
         boolean onboarding_completed
         smallint onboarding_step
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    CUSTOMERS {
+        uuid id PK
+        uuid user_id FK
+        string full_name
+        string email
+        string phone
+        string document_number
+        string company_name
+        date birth_date
+        text notes
+        text tags_array
+        boolean is_active
+        timestamptz last_contact_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    CUSTOMER_ADDRESSES {
+        uuid id PK
+        uuid user_id FK
+        uuid customer_id FK
+        string label
+        string postal_code
+        string street
+        string number
+        string complement
+        string neighborhood
+        string city
+        string state
+        string country
+        boolean is_primary
         timestamptz created_at
         timestamptz updated_at
     }
@@ -347,6 +384,78 @@ erDiagram
 - `saved_amount` é manual (não sincroniza com transações automaticamente)
 - `deadline` pode estar no passado (app deve validar)
 - Sem progresso automático (ex: % de realização)
+
+---
+
+### 8️⃣ `customers`
+
+**Função:** Cadastro principal de clientes por usuário, para CRM, vendas e relacionamento.
+
+| Coluna | Tipo | Restrição | Notas |
+|--------|------|-----------|-------|
+| `id` | UUID | PK, gen_random_uuid() | Chave primária |
+| `user_id` | UUID | NOT NULL FK (auth.users.id) | Dono do cadastro |
+| `full_name` | TEXT | NOT NULL | Nome completo do cliente |
+| `email` | TEXT | Nullable | E-mail do cliente |
+| `phone` | TEXT | Nullable | Telefone/WhatsApp |
+| `document_number` | TEXT | Nullable | CPF/CNPJ ou outro identificador |
+| `company_name` | TEXT | Nullable | Razão social / empresa |
+| `birth_date` | DATE | Nullable | Data de nascimento |
+| `notes` | TEXT | Nullable | Observações livres |
+| `tags` | TEXT[] | NOT NULL DEFAULT '{}' | Tags para segmentação |
+| `is_active` | BOOLEAN | NOT NULL DEFAULT true | Cliente ativo? |
+| `last_contact_at` | TIMESTAMPTZ | Nullable | Último contato registrado |
+| `created_at` | TIMESTAMPTZ | NOT NULL DEFAULT now() | Criação |
+| `updated_at` | TIMESTAMPTZ | NOT NULL DEFAULT now() | Último update |
+
+**Índices:**
+- `customers_user_idx` on `(user_id)`
+- `customers_user_name_idx` on `(user_id, full_name)`
+- `customers_user_email_unique` unique por usuário em `lower(email)`
+- `customers_user_document_unique` unique por usuário em `document_number`
+
+**RLS:**
+- ALL: `auth.uid() = user_id`
+
+**⚠️ Armadilhas:**
+- A tabela é por usuário, então o mesmo cliente pode existir em contas diferentes.
+- `document_number` e `email` são opcionais, então validação do formulário fica por conta da aplicação.
+
+---
+
+### 9️⃣ `customer_addresses`
+
+**Função:** Endereços vinculados a clientes, permitindo múltiplos endereços por cadastro.
+
+| Coluna | Tipo | Restrição | Notas |
+|--------|------|-----------|-------|
+| `id` | UUID | PK, gen_random_uuid() | Chave primária |
+| `user_id` | UUID | NOT NULL FK (auth.users.id) | Dono do endereço |
+| `customer_id` | UUID | NOT NULL FK (customers.id, user_id) | Garante vínculo com o mesmo dono |
+| `label` | TEXT | NOT NULL DEFAULT 'Principal' | Rótulo do endereço |
+| `postal_code` | TEXT | Nullable | CEP / código postal |
+| `street` | TEXT | NOT NULL DEFAULT '' | Rua/avenida |
+| `number` | TEXT | Nullable | Número |
+| `complement` | TEXT | Nullable | Complemento |
+| `neighborhood` | TEXT | Nullable | Bairro |
+| `city` | TEXT | NOT NULL DEFAULT '' | Cidade |
+| `state` | TEXT | NOT NULL DEFAULT '' | Estado |
+| `country` | TEXT | NOT NULL DEFAULT 'Brasil' | País |
+| `is_primary` | BOOLEAN | NOT NULL DEFAULT false | Endereço principal? |
+| `created_at` | TIMESTAMPTZ | NOT NULL DEFAULT now() | Criação |
+| `updated_at` | TIMESTAMPTZ | NOT NULL DEFAULT now() | Último update |
+
+**Índices:**
+- `customer_addresses_user_idx` on `(user_id)`
+- `customer_addresses_customer_idx` on `(customer_id)`
+- `customer_addresses_primary_unique` garante um endereço principal por cliente
+
+**RLS:**
+- ALL: `auth.uid() = user_id`
+
+**⚠️ Armadilhas:**
+- O FK composto impede endereço apontar para cliente de outro usuário.
+- Se a aplicação permitir múltiplos endereços, apenas um pode ficar como principal por cliente.
 
 ---
 

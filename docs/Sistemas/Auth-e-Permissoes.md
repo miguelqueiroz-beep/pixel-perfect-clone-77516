@@ -8,7 +8,7 @@ Modelo de autenticação, JWT, RLS e controle de acesso.
 
 ```
 Usuário
-  ├─ Signup/Login (Supabase Auth)
+  ├─ Signup/Login/OAuth Google (Supabase Auth)
   ├─ JWT gerado + salvo em localStorage
   ├─ A cada requisição: Bearer <JWT>
   └─ RLS policies filtram dados por user_id
@@ -40,6 +40,17 @@ Usuário
    }
 5. JWT retornado ao cliente
 6. Cliente salva: localStorage.setItem('sb-token', jwt)
+```
+
+### 1.1 Login com Google → JWT criado
+
+```text
+1. Usuário clica em "Continuar com Google"
+2. Supabase inicia OAuth com Google e redireciona para consentimento
+3. Google autentica o usuário e devolve a autorização ao Supabase
+4. Supabase cria ou reutiliza a conta e emite a sessão/JWT
+5. Cliente recebe a sessão via redirect e `onAuthStateChange`
+6. JWT passa a valer do mesmo jeito que no login por e-mail/senha
 ```
 
 ### 2. Requisição → Bearer Token validado

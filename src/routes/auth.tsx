@@ -34,6 +34,7 @@ const loginSchema = z.object({
 function AuthPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   // If already logged in, bounce to dashboard
   useEffect(() => {
@@ -93,6 +94,21 @@ function AuthPage() {
     navigate({ to: "/dashboard", replace: true });
   }
 
+  async function handleGoogleLogin() {
+    setGoogleLoading(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+
+    if (error) {
+      setGoogleLoading(false);
+      toast.error(error.message);
+    }
+  }
+
   return (
     <main className="min-h-screen grid lg:grid-cols-2">
       {/* Left visual panel */}
@@ -139,6 +155,24 @@ function AuthPage() {
             <span className="font-semibold">FinFlow</span>
           </div>
 
+          <div className="space-y-4 mb-6">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleGoogleLogin}
+              disabled={loading || googleLoading}
+              className="w-full justify-center border-border/80 bg-background/40 hover:bg-accent/60"
+            >
+              <GoogleLogo />
+              {googleLoading ? "Entrando com Google..." : "Continuar com Google"}
+            </Button>
+            <div className="flex items-center gap-3 text-xs uppercase tracking-[0.24em] text-muted-foreground">
+              <span className="h-px flex-1 bg-border/80" />
+              <span>ou use e-mail</span>
+              <span className="h-px flex-1 bg-border/80" />
+            </div>
+          </div>
+
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="login">Entrar</TabsTrigger>
@@ -153,7 +187,7 @@ function AuthPage() {
               <form onSubmit={handleLogin} className="space-y-4">
                 <Field id="email" name="email" type="email" label="E-mail" autoComplete="email" />
                 <Field id="password" name="password" type="password" label="Senha" autoComplete="current-password" />
-                <Button type="submit" disabled={loading} className="w-full gradient-primary text-primary-foreground hover:opacity-90">
+                <Button type="submit" disabled={loading || googleLoading} className="w-full gradient-primary text-primary-foreground hover:opacity-90">
                   {loading ? "Entrando..." : "Entrar"}
                 </Button>
               </form>
@@ -168,7 +202,7 @@ function AuthPage() {
                 <Field id="fullName" name="fullName" type="text" label="Nome completo" autoComplete="name" />
                 <Field id="su-email" name="email" type="email" label="E-mail" autoComplete="email" />
                 <Field id="su-password" name="password" type="password" label="Senha (mín. 8 caracteres)" autoComplete="new-password" />
-                <Button type="submit" disabled={loading} className="w-full gradient-primary text-primary-foreground hover:opacity-90">
+                <Button type="submit" disabled={loading || googleLoading} className="w-full gradient-primary text-primary-foreground hover:opacity-90">
                   {loading ? "Criando conta..." : "Criar conta"}
                 </Button>
               </form>
@@ -214,5 +248,16 @@ function Feature({
         <p className="text-xs text-muted-foreground">{text}</p>
       </div>
     </div>
+  );
+}
+
+function GoogleLogo() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="size-4 shrink-0">
+      <path fill="#4285F4" d="M21.35 11.1H12v2.9h5.35c-.25 1.45-1.17 2.67-2.47 3.49v2.9h3.99c2.33-2.15 3.68-5.31 3.68-9.29 0-.68-.06-1.34-.2-2z" />
+      <path fill="#34A853" d="M12 22c3.24 0 5.96-1.07 7.95-2.91l-3.99-2.9c-1.11.74-2.54 1.18-3.96 1.18-3.04 0-5.62-2.05-6.54-4.81H1.33v3.01A11.99 11.99 0 0 0 12 22z" />
+      <path fill="#FBBC05" d="M5.46 12.56A7.2 7.2 0 0 1 5.1 10c0-.89.15-1.75.36-2.56V4.43H1.33A12 12 0 0 0 0 10c0 1.93.46 3.74 1.33 5.57l4.13-3.01z" />
+      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.61 1.8l3.45-3.45C17.95 1.16 15.24 0 12 0 7.58 0 3.76 2.52 1.33 6.43l4.13 3.01C6.38 6.8 8.96 4.75 12 4.75z" />
+    </svg>
   );
 }

@@ -41,6 +41,7 @@ Matriz de impacto: "Se eu mudar X, o que quebra?"
 | **Alterar `notifications_enabled` → `notification_preferences` (JSON)** | [src/routes/_authenticated/settings.tsx](../src/routes/_authenticated/settings.tsx), onboarding | Settings page | ✅ Requer migration |
 | **Renomear rota `/transactions` → `/expenses`** | [src/routes/_authenticated/transactions.tsx](../src/routes/_authenticated/transactions.tsx), links | Links, navegação | ✅ Atualizar router e wikilinks |
 | **Adicionar nova table `audit_log`** | [supabase/migrations/](../../susupabase/migrations/), [src/lib/queries.ts](../src/lib/queries.ts) | Nenhum (adiciona feature) | ✅ Neutro |
+| **Adicionar tabelas `customers` e `customer_addresses`** | [supabase/migrations/](../../supabase/migrations/), [docs/Arquitetura/Banco-de-Dados.md](../Arquitetura/Banco-de-Dados.md) | Migration, RLS, consultas futuras | ✅ Feature nova |
 
 ---
 

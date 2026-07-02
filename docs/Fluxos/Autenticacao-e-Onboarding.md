@@ -10,10 +10,13 @@ Fluxo completo de signup, login e onboarding do usuário.
 graph TD
     A["👤 Novo Usuário"] --> B["Acessa /<br/>Landing"]
     B --> C{"Logado?"}
-    C -->|Não| D["Clica 'Entrar'"]
+    C -->|Não| D["Clica 'Entrar' ou 'Continuar com Google'"]
     C -->|Sim| E["Redireciona<br/>/dashboard"]
     
-    D --> F{Tem conta?}
+    D --> E1{Usa Google?}
+    E1 -->|Sim| E2["OAuth Google via Supabase"]
+    E2 --> H7
+    E1 -->|Não| F{Tem conta?}
     F -->|Não| G["Signup:<br/>Nome + Email + Senha"]
     F -->|Sim| H["Login:<br/>Email + Senha"]
     
@@ -36,7 +39,7 @@ graph TD
     H5 -->|Error| H6["❌ Email/senha<br/>incorretos"]
     H6 --> H1
     H5 -->|Success| H7["✅ JWT salvo<br/>localStorage"]
-    
+
     G7 --> I["Redireciona<br/>/auth (login)"]
     H7 --> J{onboarding_<br/>completed?}
     
@@ -118,6 +121,26 @@ sequenceDiagram
         Auth-->>Server: ✓ Autenticado
         Server-->>Browser: 🏠 Dashboard renderizado
     end
+```
+
+---
+
+## 🔐 Sequência Detalhada: Login com Google
+
+```mermaid
+sequenceDiagram
+    participant Browser as 🌐 Browser
+    participant AuthForm as Auth Form<br/>(Google)
+    participant Supabase as Supabase Auth
+    participant Google as Google OAuth
+
+    Browser->>AuthForm: Clica em "Continuar com Google"
+    AuthForm->>Supabase: signInWithOAuth(provider=google, redirectTo=origin)
+    Supabase->>Google: Redireciona para consentimento
+    Google-->>Supabase: Retorna com autorização
+    Supabase-->>Browser: Sessão criada + redirecionamento
+    Browser-->>Browser: JWT persistido e onAuthStateChange dispara
+    Browser->>Browser: Redireciona /dashboard
 ```
 
 ---
